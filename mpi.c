@@ -14,8 +14,8 @@ int main(int argc, char **argv) {
 
 
 	//need runnig tallies
-	long long int Ntotal;
-	long long int Ncircle;
+	long long int Ntotal = 0;
+	long long int Ncircle = 0;
 
 	//seed random number generator
 	double seed = rank;
@@ -33,8 +33,17 @@ int main(int argc, char **argv) {
 		Ntotal++;	
 	}
 
-	double pi = 4.0*Ncircle/ (double) Ntotal;
-	printf("Our estimate of pi is %f \n", pi);
+	long long int Nglobal;
+
+	Ncircle = Ncircle;
+
+	MPI_Allreduce(&Ncircle, &Nglobal, 1, MPI_LONG_LONG_INT, MPI_SUM, MPI_COMM_WORLD);
+	
+	double pi = 4.0*Nglobal/ (double) (size * Ntotal);
+
+	if (rank == 0){
+		printf("Our estimate of pi is %f \n", pi);
+	}
 
 	MPI_Finalize();
 
